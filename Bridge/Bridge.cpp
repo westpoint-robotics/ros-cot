@@ -16,8 +16,8 @@ using namespace std;
 double lat1[] = { 40.45771, 40.45913, 40.45989 };
 double lon1[] = { -79.78910, -79.78931, -79.78935 };
 
-double lat2[] = { 40.46168, 40.45840, 40.45756 };
-double lon2[] = { -79.78581, -79.78670, -79.79065 };
+double lat2[] = { 40.45756, 40.45840, 40.46168};
+double lon2[] = { -79.79065, -79.78670, -79.78581};
 
 int main()
 {
@@ -35,6 +35,8 @@ int main()
 
         client.sendPositionReport(lat1[0] , lon1[0], 335.28);
         client1.sendPositionReport(lat2[0] , lon2[0], 345);
+
+        client.sendContactReport("BTR80 1", "a-h-G-U-C-A-W-W", 40.46178, -79.78667, 315.17);
         this_thread::sleep_for(std::chrono::milliseconds(10000));
 
         for (int i = 0; i < 2; i++) {
@@ -49,6 +51,16 @@ int main()
                 client1.sendPositionReport(lat2[i] + j * deltaLat2, lon2[i] + j * deltaLon2, 345);
 
                 this_thread::sleep_for(std::chrono::milliseconds(125));
+                if (i == 1) {
+                    if (j==n/2)
+                        client.sendContactReport("BTR80 1", "a-h-G-U-C-A-W-W", 40.46178, -79.78667, 315.17);
+                    if (j==2*n/3)
+                        client.sendContactReport("Enemy Troup 2", "a-h-G-U-C-I", 40.46087, -79.78682, 315.17);
+                }
+            }
+
+            if (i == 0) {
+                client.sendContactReport("Enemy Troup 1", "a-h-G-U-C-I", 40.4616, -79.78755, 315.17);
             }
         }
         cout << "Sent   " << client.getSendCount() << " messages." << endl
