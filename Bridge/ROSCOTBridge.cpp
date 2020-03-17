@@ -35,7 +35,13 @@ void atakContactsCallback(const ros_cot_msgs::AtakContactList::ConstPtr& msg)
 {
 	std::stringstream msgBuilder;
 	msgBuilder << "Got contact list: " << msg->contactList.size();
-	  ROS_INFO_STREAM(msgBuilder.str());
+	for (size_t contactNum = 0; contactNum < msg->contactList.size(); ++ contactNum)
+	{
+		const auto& contactMsg = msg->contactList.at(contactNum);
+		ROS_INFO_STREAM(msgBuilder.str());
+		client->sendContactReport(contactMsg.uid.c_str(), contactMsg.type.c_str(),
+				contactMsg.latitude, contactMsg.longitude, contactMsg.altitude);
+	}
 }
 
 
