@@ -12,10 +12,23 @@
 #include "Utility/timeStrings.hpp"
 
 namespace AIDTR {
-	//
+	/** A class to parametically generated CoT messages to send over network and to recceive CoT messages from network to produce callback functions.
+	*
+	*	CoTClient
+	*/
 	class CoTClient : protected Messaging::XmlMessagingBase
 	{
 	public:
+		/** CoTClient Constructor - instantiates an object to send and recieve CoT Messages
+		*
+		*	@param io_service Boost asio's ioservice instance to use for this object
+		*	@param multicast_address The IP address to send UDP messages to. It is expected to be a multicast address, but does not need be.
+		*	@param multicast_port The port to send UDP messages to.
+		*	@param uid The unique identifier string for *this* CotClient. CoT self-reports like position will include this uid, and the uid will display on ATAK displays.
+		*	@param type The type identifier string for *this* CoTClient. Like uid above, this type string will be used in self-report messages.
+		*	@param how The method through which position information is determined in CoT. "m-f" indicates 'machine fused' localization method. @see CoT documentation for more info.
+		*	@param simulation Boolean flag indicating if reports are for a simulation or from live action.
+		*/
 		CoTClient(boost::asio::io_service& io_service,
 			const boost::asio::ip::address& multicast_address,
 			const short multicast_port = 30001,
@@ -49,6 +62,14 @@ namespace AIDTR {
 			delete pTarget;
 		}
 
+		/** send a postiion self-report over CoT
+		*
+		*	@lat the WGS84 latitude, -90 <= lat <= 90
+		*	@lon the WGS84 longitude, -180 < lon <= 180
+		*	@hae the heigh in meters above the WGS84 ellispoid
+		*	@ce	the circular (horizontal) 1-sigma position error, in meters.
+		*	@le the altitude (vertical) 1-sigma position error, in meters.
+		*/
 		void sendPositionReport(const double lat, const double lon, const double hae, const double ce = 10, const double le = 0.5) {
 			{
 				std::lock_guard<std::mutex> lock(positionMutex); //positionMutex protects against race conditions on the data in pPointEl... Only lock when changing this data.
@@ -57,6 +78,18 @@ namespace AIDTR {
 			send(pPositionDoc);
 		}
 
+		/**
+		*
+		*	@param uid The unique identifier string for the contact. This uid will display on ATAK displays.
+		*	@param type The type identifier string for the contact.
+		*	@lat the WGS84 latitude of the contact, -90 <= lat <= 90
+		*	@lon the WGS84 longitude of the contact, -180 < lon <= 180
+		*	@hae the heigh of the contact in meters above the WGS84 ellispoid
+		*	@ce	the circular (horizontal) 1-sigma position error of the contact, in meters.
+		*	@le the altitude (vertical) 1-sigma position error of the contact, in meters.
+		*	@param how The method through which position information is determined in CoT. "m-f" indicates 'machine fused' localization method. @see CoT documentation for more info.
+		*	@param simulation Boolean flag indicating if reports are for a simulation or from live action.
+		*/
 		void sendContactReport(const char* uid, const char* type,
 			const double lat, const double lon, const double hae, const double ce = 10, const double le = 0.5,
 			const char* how = "m-f", bool simulation = true)
