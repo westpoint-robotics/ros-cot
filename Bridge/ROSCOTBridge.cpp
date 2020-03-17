@@ -3,12 +3,14 @@
 
 #include <iostream>
 #include <thread>
+#include <sstream>
 #include <boost/asio.hpp>
 #include "CoTClient.hpp"
 
 #include "ros/ros.h"
 #include "sensor_msgs/NavSatFix.h"
 
+#include "ros_cot_msgs/AtakContactList.h"
 
 //  CoT Multicast
 //ATAK default for SA Multicast 239.2.3.1:6969
@@ -29,6 +31,12 @@ void chatterCallback(const sensor_msgs::NavSatFix::ConstPtr& msg)
 	  ROS_INFO("Error: CoTClient not initialized, ROS is unable to forward message to CoTClient");
 }
 
+void atakContactsCallback(const ros_cot_msgs::AtakContactList::ConstPtr& msg)
+{
+	std::stringstream msgBuilder;
+	msgBuilder << "Got contact list: " << msg->contactList.size();
+	  ROS_INFO_STREAM(msgBuilder.str());
+}
 
 
 int main(int argc, char **argv)
@@ -45,7 +53,8 @@ int main(int argc, char **argv)
 
 		ros::NodeHandle n;
 
-		ros::Subscriber sub = n.subscribe("fix", 100, chatterCallback);
+		ros::Subscriber poseSub = n.subscribe("fix", 100, chatterCallback);
+		ros::Subscriber contactSub = n.subscribe("contacts", 100, atakContactsCallback);
 
 		ros::spin();
     }
