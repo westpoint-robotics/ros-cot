@@ -21,5 +21,9 @@ Then to run the docker bridge, execute this command:
 
     $ docker run --rm -it --network=host --name=ros-cot-bridge aidtr-ros-cot-bridge /home/aidtr/ros-cot/Bridge/roscot_bridge
 
+If the image was pulled from the registry, use this command:
+
+    $ docker run --rm -it --network=host --name=ros-cot-bridge unicorn.rec.ri.cmu.edu:5000/aidtr-ros-cot-bridge:unstable /home/aidtr/ros-cot/Bridge/roscot_bridge
+
 
 
