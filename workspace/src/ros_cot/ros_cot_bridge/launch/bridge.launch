@@ -1,0 +1,4 @@
+<launch>
+    <node name="ros_cot_bridge" pkg="ros_cot_bridge" type="ros_cot_bridge_node" >
+    </node>
+</launch>
